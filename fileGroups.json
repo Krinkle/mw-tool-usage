@@ -1,0 +1,25 @@
+{
+	"Krinkle": {
+		"File:Krinkle RTRC.js": "RTRC",
+		"File:Krinkle AjaxPatrolLinks.js": "AjaxPatrolLinks",
+		"File:Krinkle Global SUL.js": "Global SUL",
+		"File:Krinkle CVNSimpleOverlay.js": "CVNSimpleOverlay",
+		"File:Krinkle CVNSimpleOverlay wiki.js": "CVNSimpleOverlay-wiki",
+		"File:Krinkle CommonsCreatorLister.js": "CommonsCreatorLister",
+		"File:Krinkle CommonsUploadPatrol.js": "CommonsUploadPatrol",
+		"File:Krinkle Countervandalism.js": "Countervandalism.js",
+		"File:Krinkle InsertWikiEditorButton.js": "InsertWikiEditorButton",
+		"File:Krinkle OneClickCommoniser.js": "OneClickCommoniser",
+		"File:Krinkle PopCategoryDisplay.js": "PopCategoryDisplay",
+		"File:Krinkle RTRCdev.js": "RTRC-dev",
+		"File:Krinkle SpecialAbuseLog HistLink.js": "SpecialAbuseLogHistLink",
+		"File:Krinkle TinEye.js": "TinEye",
+		"File:Krinkle VectorSearchNav.js": "VectorSearchNav",
+		"File:Krinkle Vector LTR.js": "VectorLTR",
+		"File:Krinkle WhatLeavesHere.js": "WhatLeavesHere",
+		"File:Krinkle addDeleteReasons.js": "AddDeleteReasons",
+		"File:Krinkle insertVectorButtons.js": "InsertVectorButtons",
+		"File:Krinkle mwEditsectionZero.js": "mwEditsectionZero",
+		"File:Krinkle toggleRevDel.js": "ToggleRevDel"
+	}
+}
