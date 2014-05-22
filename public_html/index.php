@@ -41,8 +41,6 @@ $kgBaseTool->setSourceInfoGithub( 'Krinkle', 'mw-tool-usage', __DIR__ );
  * -------------------------------------------------
  */
 
-$kgBaseTool->doHtmlHead();
-
 $kgBaseTool->addOut( '<div class="container"><div class="row">' );
 
 switch ( $kgReq->getVal( 'action', 'index' ) ) {
