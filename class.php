@@ -4,7 +4,7 @@
  *
  * @package mw-tool-usage
  */
-class KrUsage extends KrToolBaseClass {
+class Usage extends KrToolBaseClass {
 
 	const MAX_API_QUERY_CONTINUE = 10;
 

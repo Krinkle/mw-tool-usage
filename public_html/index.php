@@ -2,21 +2,22 @@
 /**
  * Main index
  *
- * @package mw-tool-usage
- * @license http://krinkle.mit-license.org/
  * @author Timo Tijhof, 2010-2014
+ * @license http://krinkle.mit-license.org/
+ * @package mw-tool-usage
  */
 
 /**
  * Configuration
  * -------------------------------------------------
  */
+
 // BaseTool & Localization
 require_once __DIR__ . '/../lib/basetool/InitTool.php';
 
 // Class for this tool
 require_once __DIR__ . '/../class.php';
-$kgTool = new KrUsage();
+$kgTool = new Usage();
 
 // Local configuration
 require_once __DIR__ . '/../config.php';
@@ -34,7 +35,7 @@ $toolConfig = array(
 );
 
 $kgBaseTool = BaseTool::newFromArray( $toolConfig );
-$kgBaseTool->setSourceInfoGithub( 'Krinkle', 'mw-tool-usage', __DIR__ );
+$kgBaseTool->setSourceInfoGithub( 'Krinkle', 'mw-tool-usage', dirname( __DIR__ ) );
 
 /**
  * Output
