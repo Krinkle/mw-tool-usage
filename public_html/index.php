@@ -74,7 +74,7 @@ case 'usage':
 	}
 	$hc = 0;
 
-	$info = $kgTool->getUsage( $fileGroup );
+	$info = $kgTool->getUsage( $groupName );
 
 	$toc = '<ul class="nav usage-sidenav">';
 

@@ -100,12 +100,9 @@ class Usage extends KrToolBaseClass {
 		// Request data
 		// TODO: Silently fails if no response or unable to decode. Handle error.
 		$requests++;
-		$response = file_get_contents( $apiUrl . '?' . http_build_query( $query ) );
-		if ( !$response ) {
-			return array();
-		}
-		$data = json_decode( $response );
-		if ( !$data || isset( $data->error ) || !isset( $data->query ) ) {
+
+		$data = kfApiRequest( $apiUrl, $query );
+		if ( !$data || !isset( $data->query ) ) {
 			return array();
 		}
 		unset( $data->query->normalized );
@@ -128,7 +125,7 @@ class Usage extends KrToolBaseClass {
 	 * @param string[] $filenames
 	 * @return array
 	 */
-	protected function getGlobalUsageForFiles( Array $filenames ) {
+	protected function fetchGlobalUsageForFiles( Array $filenames ) {
 		global $kgReq;
 
 		$query = array(
@@ -141,10 +138,9 @@ class Usage extends KrToolBaseClass {
 			'continue' => ''
 		);
 
-		$proto = $kgReq->getProtocol();
-
-		// Use the same protocol, so that query results contain http/https accordingly
-		$queryData =  $this->getApiQuery( $proto . '://commons.wikimedia.org/w/api.php', $query );
+		// GlobalUsage API responses contain urls (e.g. to a local wiki page using the file),
+		// that include a protocol. They're not protocol-relative unfortunately.
+		$queryData =  $this->getApiQuery( 'http://commons.wikimedia.org/w/api.php', $query );
 
 		$stats = array(
 			'total' => 0,
@@ -171,7 +167,8 @@ class Usage extends KrToolBaseClass {
 					$statWikis[ $use->wiki ] = 1;
 				}
 
-				$usage['wikis'][ $use->wiki ][ $use->title ]['url'] = $use->url;
+				// Fix-up protocol
+				$usage['wikis'][ $use->wiki ][ $use->title ]['url'] = preg_replace( '/^http:\/\//', '//', $use->url );
 				$usage['wikis'][ $use->wiki ][ $use->title ]['files'][] = $page->title;
 			}
 
@@ -196,8 +193,22 @@ class Usage extends KrToolBaseClass {
 	 * @param array $fileGroup
 	 * @return array
 	 */
-	public function getUsage( $fileGroup ) {
-		return $this->getGlobalUsageForFiles( array_keys( $fileGroup ) );
+	public function getUsage( $groupName ) {
+		global $kgCache;
+
+		$fileGroup = $this->getFileGroup( $groupName );
+		// Include hash of fileGroup itself in the cache key to automatically
+		// roll-over in case of changes to the configuration.
+		$groupHash = sha1( json_encode( $fileGroup ) );
+
+		$key = kfCacheKey( 'usage', 'mwapi', 'globalusage', 'fileGroup', $groupName, $groupHash );
+		$value = $kgCache->get( $key );
+		if ( $value === false ) {
+			$value =  $this->fetchGlobalUsageForFiles( array_keys( $fileGroup ) );
+			$kgCache->set( $key, $value, 3600 );
+		}
+
+		return $value;
 	}
 
 	/**
