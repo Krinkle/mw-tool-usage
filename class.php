@@ -179,7 +179,9 @@ class Usage extends KrToolBaseClass {
 			$stats['total'] += $statTotal;
 		}
 
+		ksort( $usage['wikis'] );
 		foreach ( $usage['wikis'] as &$pages ) {
+			ksort( $pages );
 			$usage['total'] += count( $pages );
 		}
 
