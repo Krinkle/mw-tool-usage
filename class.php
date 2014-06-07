@@ -172,6 +172,8 @@ class Usage extends KrToolBaseClass {
 				$usage['wikis'][ $use->wiki ][ $use->title ]['files'][] = $page->title;
 			}
 
+			arsort( $statWikis );
+
 			$stats['files'][ $page->title ] = array(
 				'total' => $statTotal,
 				'wikis' => $statWikis,
