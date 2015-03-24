@@ -21,5 +21,13 @@
 		"File:Krinkle insertVectorButtons.js": "InsertVectorButtons",
 		"File:Krinkle mwEditsectionZero.js": "mwEditsectionZero",
 		"File:Krinkle toggleRevDel.js": "ToggleRevDel"
+	},
+	"Pathoschild": {
+		"File:Pathoschild/ajaxsysop.js": "Ajax sysop",
+		"File:Pathoschild/filterrc.js": "FilterRC",
+		"File:Pathoschild/forceltr.js": "Force ltr",
+		"File:Pathoschild/stewardscript.js": "StewardScript",
+		"File:Pathoschild/templatescript.js": "TemplateScript",
+		"File:Pathoschild/usejs.js": "UseJS"
 	}
 }
