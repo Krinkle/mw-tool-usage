@@ -1,6 +1,6 @@
 language: php
 php:
-  - "hhvm-nightly"
+  - "hhvm"
   - "5.6"
   - "5.4"
   - "5.3"
