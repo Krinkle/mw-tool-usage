@@ -110,7 +110,7 @@ class Usage extends KrToolBaseClass {
 		// https://www.mediawiki.org/wiki/API:Query#Continuing_queries
 		if ( isset( $data->continue ) ) {
 			if ( $requests >= self::MAX_API_QUERY_CONTINUE ) {
-				kfLog( "Reached maximum query-continue depth ($requests requests)", __METHOD__ );
+				kfLog( "Reached maximum continue depth ($requests requests)", __METHOD__ );
 				return $data->query;
 			}
 			$nextQuery = array_merge( $query, (array)$data->continue );
@@ -134,7 +134,6 @@ class Usage extends KrToolBaseClass {
 			'prop' => 'globalusage',
 			'gulimit' => '500',
 			'titles' => implode( '|', $filenames ),
-			// Use new "continue" feature instead of legacy query-continue
 			'continue' => ''
 		);
 
