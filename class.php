@@ -139,7 +139,7 @@ class Usage extends KrToolBaseClass {
 
 		// GlobalUsage API responses contain urls (e.g. to a local wiki page using the file),
 		// that include a protocol. They're not protocol-relative unfortunately.
-		$queryData =  $this->getApiQuery( 'http://commons.wikimedia.org/w/api.php', $query );
+		$queryData =  $this->getApiQuery( 'https://commons.wikimedia.org/w/api.php', $query );
 
 		$stats = array(
 			'total' => 0,
