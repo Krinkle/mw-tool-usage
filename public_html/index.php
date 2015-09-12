@@ -25,7 +25,7 @@ require_once __DIR__ . '/../config.php';
 $toolConfig = array(
 	'displayTitle' => 'Usage',
 	'remoteBasePath' => dirname( $kgConf->getRemoteBase() ). '/',
-	'revisionId' => '0.3.0',
+	'revisionId' => '0.4.0',
 	'styles' => array(
 		'main.css',
 	),
