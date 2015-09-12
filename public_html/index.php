@@ -91,13 +91,22 @@ case 'usage':
 
 	$toc .= '<li><a href="#header">Statistics</a>';
 	$toc .= '<ul class="nav">';
-	foreach ( $info['stats']['files'] as $filename => $file ) {
+
+	// Sort descending, by total use
+	$files = $info['stats']['files'];
+	uasort( $files, function ( $a, $b ) {
+		if ( $a['total'] === $b['total'] ) {
+			return 0;
+		}
+		return ($a['total'] < $b['total']) ? 1 : -1;
+	} );
+	foreach ( $files as $filename => $file ) {
 		$fileLabel = $fileGroup[ $filename ];
 		$heading = $fileLabel;
 		// Use escapeClass instead of escapeId because while escapeId is technically
 		// good enough, both jquery.toc and bootstrap/scrollspy rely on the ID
 		// being safe to embed in a CSS selector...
-		$headingId = Sanitizer::escapeClass( "stats-$filename" );
+		$headingId = Sanitizer::escapeClass( "stats-{$filename}" );
 		$toc .= '<li>' . Html::element( 'a', array( 'href' => "#$headingId" ), $heading ) . '</li>';
 
 		$isEmpty = !reset( $file['wikis'] );
