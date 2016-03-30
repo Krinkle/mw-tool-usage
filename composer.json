@@ -1,8 +1,11 @@
 {
+	"require": {
+		"Krinkle/toollabs-base": "~0.7.0"
+	},
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "0.8.*"
 	},
 	"scripts": {
-		"test": "parallel-lint --exclude vendor --exclude libs ."
+		"test": "parallel-lint --exclude vendor ."
 	}
 }

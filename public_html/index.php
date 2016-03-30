@@ -2,7 +2,7 @@
 /**
  * Main index
  *
- * @author Timo Tijhof, 2010-2014
+ * @author Timo Tijhof
  * @license http://krinkle.mit-license.org/
  * @package mw-tool-usage
  */
@@ -12,29 +12,25 @@
  * -------------------------------------------------
  */
 
-// BaseTool & Localization
-require_once __DIR__ . '/../lib/basetool/InitTool.php';
-
-// Class for this tool
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../class.php';
-$kgTool = new Usage();
 
-// Local configuration
+$tool = new Usage();
+
 require_once __DIR__ . '/../config.php';
 
-$toolConfig = array(
+// Local configuration
+$kgBaseTool = BaseTool::newFromArray( array(
 	'displayTitle' => 'Usage',
 	'remoteBasePath' => dirname( $kgConf->getRemoteBase() ). '/',
-	'revisionId' => '0.4.0',
+	'revisionId' => '1.0.0',
 	'styles' => array(
 		'main.css',
 	),
 	'scripts' => array(
 		'main.js',
 	)
-);
-
-$kgBaseTool = BaseTool::newFromArray( $toolConfig );
+) );
 $kgBaseTool->setSourceInfoGithub( 'Krinkle', 'mw-tool-usage', dirname( __DIR__ ) );
 
 /**
@@ -50,7 +46,7 @@ case 'index':
 	$kgBaseTool->addOut( '<div class="col-md-9" role="main">' );
 
 	$kgBaseTool->setLayout( 'header', array( 'titleText' => 'File groups' ) );
-	$fileGroups = $kgTool->getFileGroups();
+	$fileGroups = $tool->getFileGroups();
 	$kgBaseTool->addOut( '<ul class="nav nav-pills nav-stacked">' );
 	foreach ( $fileGroups as $groupName => $fileGroup ) {
 		$kgBaseTool->addOut( '<li>' );
@@ -67,14 +63,14 @@ case 'index':
 	break;
 case 'usage':
 	$groupName = $kgReq->getVal( 'group' );
-	$fileGroup = $kgTool->getFileGroup( $groupName );
+	$fileGroup = $tool->getFileGroup( $groupName );
 	if ( !$fileGroup ) {
 		// TODO: Handle unknown group
 		break;
 	}
 	$hc = 0;
 
-	$info = $kgTool->getUsage( $groupName );
+	$info = $tool->getUsage( $groupName );
 
 	$toc = '<ul class="nav usage-sidenav">';
 

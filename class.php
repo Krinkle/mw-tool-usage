@@ -1,7 +1,9 @@
 <?php
 /**
- * Main class
+ * Main tool class
  *
+ * @author Timo Tijhof
+ * @license http://krinkle.mit-license.org/
  * @package mw-tool-usage
  */
 class Usage extends KrToolBaseClass {
