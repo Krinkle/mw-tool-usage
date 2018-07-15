@@ -103,8 +103,7 @@
 		"File:Krinkle Vector LTR.js": "VectorLTR",
 		"File:Krinkle WhatLeavesHere.js": "WhatLeavesHere",
 		"File:Krinkle addDeleteReasons.js": "AddDeleteReasons",
-		"File:Krinkle insertVectorButtons.js": "InsertVectorButtons",
-		"File:Krinkle toggleRevDel.js": "ToggleRevDel"
+		"File:Krinkle insertVectorButtons.js": "InsertVectorButtons"
 	},
 	"Pathoschild": {
 		"File:Pathoschild/ajaxsysop.js": "Ajax sysop",
