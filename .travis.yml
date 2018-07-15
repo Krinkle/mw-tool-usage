@@ -1,7 +1,6 @@
 sudo: false
 language: php
 php:
-  - "hhvm"
   - "5.6"
   - "5.5"
 install:
@@ -10,7 +9,3 @@ install:
 script:
   - composer test
   - npm test
-notifications:
-  irc:
-    channels:
-      - "chat.freenode.net##krinkle"
