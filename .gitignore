@@ -1,4 +1,4 @@
-vendor
-node_modules
-composer.lock
-config.php
+/vendor
+/node_modules
+/composer.lock
+/config.php
