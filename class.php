@@ -221,17 +221,33 @@ class Usage extends KrToolBaseClass {
 	 * @return array|false File names
 	 */
 	public function getFileGroup( $groupName ) {
-		$fileGroups = $this->getSetting( 'fileGroups' );
+		$fileGroups = $this->getFileGroups();
 		if ( !isset( $fileGroups[ $groupName ] ) ) {
 			return false;
 		}
 		return $fileGroups[ $groupName ];
 	}
 
+	public function makeSafeCssIdent( $text ) {
+		// Convert special chars to underscores, and trim remaining underscores
+		$safe = preg_replace(
+			[
+				'/(^[0-9\\-])|[\\x00-\\x20!"#$%&\'()*+,.\\/:;<=>?@[\\]^`{|}~]|\\xC2\\xA0/',
+				'/_+/'
+			],
+			'_',
+			$text
+		);
+		return rtrim( $safe, '_' );
+	}
+
 	/**
 	 * @return array File groups
 	 */
 	public function getFileGroups() {
-		return $this->getSetting( 'fileGroups' );
+		return json_decode(
+			file_get_contents( $this->getSetting( 'fileGroups' ) ),
+			/* assoc= */ true
+		);
 	}
 }

@@ -16,14 +16,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../class.php';
 
 $tool = new Usage();
-
-require_once __DIR__ . '/../config.php';
+$tool->setSettings( require __DIR__ . '/../config.php' );
 
 // Local configuration
 $kgBaseTool = BaseTool::newFromArray( array(
 	'displayTitle' => 'Usage',
-	'remoteBasePath' => dirname( $kgConf->getRemoteBase() ). '/',
-	'revisionId' => '1.0.0',
+	'remoteBasePath' => dirname( $_SERVER['PHP_SELF'] ),
 	'styles' => array(
 		'main.css',
 	),
@@ -99,10 +97,9 @@ case 'usage':
 	foreach ( $files as $filename => $file ) {
 		$fileLabel = $fileGroup[ $filename ];
 		$heading = $fileLabel;
-		// Use escapeClass instead of escapeId because while escapeId is technically
-		// good enough, both jquery.toc and bootstrap/scrollspy rely on the ID
-		// being safe to embed in a CSS selector...
-		$headingId = Sanitizer::escapeClass( "stats-{$filename}" );
+		// Create a simple ID that is safe enough to use in a CSS selector
+		// without escaping (jquery.toc and bootstrap/scrollspy depend on that)
+		$headingId = $tool->makeSafeCssIdent( "stats-{$filename}" );
 		$toc .= '<li>' . Html::element( 'a', array( 'href' => "#$headingId" ), $heading ) . '</li>';
 
 		$isEmpty = !reset( $file['wikis'] );
@@ -127,7 +124,7 @@ case 'usage':
 	$toc .= '<ul class="nav">';
 	$kgBaseTool->addOut( "Overview", 'h2', array( 'id' => 'usage', 'class' => 'page-header' ) );
 	foreach ( $info['usage']['wikis'] as $wiki => $pages ) {
-		$headingId = Sanitizer::escapeClass( "usage-$wiki" );
+		$headingId = $tool->makeSafeCssIdent( "usage-$wiki" );
 		$toc .= '<li>' . Html::element( 'a', array( 'href' => "#$headingId" ), $wiki ) . '</li>';
 		$kgBaseTool->addOut( $wiki, 'h3', array( 'id' => $headingId ) );
 		$kgBaseTool->addOut( '<ul>' );
