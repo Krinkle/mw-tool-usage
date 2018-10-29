@@ -18,10 +18,13 @@ if ( file_exists( __DIR__ . '/../config.php' ) ) {
 	$tool->setSettings( require __DIR__ . '/../config.php' );
 }
 
+$int = new Intuition( 'usage' );
+$int->registerDomain( 'usage', __DIR__ . '/../i18n' );
 
 $kgBaseTool = BaseTool::newFromArray( array(
 	'displayTitle' => 'Usage',
 	'remoteBasePath' => dirname( $_SERVER['PHP_SELF'] ),
+	'I18N' => $int,
 	'styles' => array(
 		'main.css',
 	),
@@ -43,15 +46,22 @@ case 'index':
 
 	$kgBaseTool->addOut( '<div class="col-md-9" role="main">' );
 
-	$kgBaseTool->setLayout( 'header', array( 'titleText' => 'File groups' ) );
+	$kgBaseTool->setLayout( 'header', array( 'titleText' => $int->msg( 'index-header-title' ) ) );
 	$fileGroups = $tool->getFileGroups();
 	$kgBaseTool->addOut( '<ul class="nav nav-pills nav-stacked">' );
 	foreach ( $fileGroups as $groupName => $fileGroup ) {
-		$kgBaseTool->addOut( '<li>' );
-		$kgBaseTool->addOut( $groupName . ' (' . count( $fileGroup ) . ' files)', 'a', array(
-			'href' => './?' . http_build_query( array( 'action' => 'usage', 'group' => $groupName ) ),
-		) );
-		$kgBaseTool->addOut( '</li>' );
+		$kgBaseTool->addOut(
+			'<li>'
+			. Html::element( 'a',
+				[
+					'href' => './?' . http_build_query( array( 'action' => 'usage', 'group' => $groupName ) ),
+				],
+				$int->msg( 'index-entry-label', [
+					'variables' => [ $groupName, count( $fileGroup ) ]
+				] )
+			)
+			. '</li>'
+		);
 	}
 	$kgBaseTool->addOut( '</ul>' );
 
@@ -74,12 +84,18 @@ case 'usage':
 
 	$kgBaseTool->setHeadTitle( $groupName );
 	$kgBaseTool->setLayout( 'header', array(
-		'titleText' => 'Statistics for ' . $groupName,
-		'captionHtml' => "These " . count( $fileGroup ) . " scripts have a total of <strong>{$info['stats']['total']} links</strong>"
-			. " from <strong>{$info['usage']['total']} unique pages</strong>"
-			. ' on <strong>' . count( $info['usage']['wikis'] ) . ' different wikis</strong>.'
-		)
-	);
+		'titleText' => $int->msg( 'group-header-title', [
+			'variables' => [ $groupName ],
+		] ),
+		'captionText' => $int->msg( 'group-header-caption', [
+			'variables' => [
+				count( $fileGroup ), // $1: scripts
+				$info['stats']['total'], // $2: links
+				$info['usage']['total'], // $3: pages
+				count( $info['usage']['wikis'] ), // $4: wikis
+			],
+		] ),
+	) );
 
 	$kgBaseTool->addOut( '<div class="col-md-9" role="main">' );
 

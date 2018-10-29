@@ -1,0 +1,7 @@
+{
+	"title": "{{Optional}}\nShort name of the tool for the browser navigation.",
+	"index-header-title": "Page title of the main page, which lists all groups that exist.",
+	"index-entry-label": "Label of a link to a page about a specific group.\n\n- $1: Name of the group\n- $2: Number of files this group has\n",
+	"group-header-title": "Page title of the statistics page about one group.\n\n- $1: Name of the group\n",
+	"group-header-caption": "Caption below the header on a group statistics page.\n\n- $1: Number of scripts that exist in this group.\n- $2: Number of links we found in total to these scripts.\n- $3: Numer of different pages that have at least one link to one these scripts.\n- $4: Number of different wikis that have at least one page with one link to a script.\n"
+}

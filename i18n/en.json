@@ -1,0 +1,7 @@
+{
+	"title": "Usage",
+	"index-header-title": "File groups",
+	"index-entry-label": "$1 ({{PLURAL:$2|1 file|$2 files}})",
+	"group-header-title": "Statistics for $1",
+	"group-header-caption": "These {{PLURAL:$1|$1 scripts}} have a total of {{PLURAL:$2|$2 links}} from {{PLURAL:$3|$3 unique pages}} on {{PLURAL:$4|$4 different wikis}}."
+}
