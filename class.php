@@ -2,13 +2,15 @@
 /**
  * Main tool class
  *
- * @author Timo Tijhof
- * @license http://krinkle.mit-license.org/
- * @package mw-tool-usage
+ * @copyright 2014-2018 Timo Tijhof
  */
 class Usage extends KrToolBaseClass {
 
 	const MAX_API_QUERY_CONTINUE = 10;
+
+	protected $settings = array(
+		'fileGroups' => __DIR__ . '/fileGroups.json',
+	);
 
 	protected $settingsKeys = array(
 		'fileGroups',

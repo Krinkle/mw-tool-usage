@@ -1,12 +1,15 @@
 {
 	"require": {
 		"php": ">=5.6",
-		"Krinkle/toollabs-base": "^1.0.0"
+		"Krinkle/toollabs-base": "^1.0.1"
 	},
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "1.0.0"
 	},
 	"scripts": {
-		"test": "parallel-lint --exclude vendor ."
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"npm install && npm test"
+		]
 	}
 }

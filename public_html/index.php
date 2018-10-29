@@ -2,9 +2,7 @@
 /**
  * Main index
  *
- * @author Timo Tijhof
- * @license http://krinkle.mit-license.org/
- * @package mw-tool-usage
+ * @copyright 2014-2018 Timo Tijhof
  */
 
 /**
@@ -16,9 +14,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../class.php';
 
 $tool = new Usage();
-$tool->setSettings( require __DIR__ . '/../config.php' );
+if ( file_exists( __DIR__ . '/../config.php' ) ) {
+	$tool->setSettings( require __DIR__ . '/../config.php' );
+}
 
-// Local configuration
+
 $kgBaseTool = BaseTool::newFromArray( array(
 	'displayTitle' => 'Usage',
 	'remoteBasePath' => dirname( $_SERVER['PHP_SELF'] ),
