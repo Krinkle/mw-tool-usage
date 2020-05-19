@@ -130,20 +130,24 @@ class Usage extends KrToolBaseClass {
 	 * @return array
 	 */
 	protected function fetchGlobalUsageForFiles( Array $filenames ) {
-		global $kgReq;
+		// API error 'toomanyvalue': Too many values for "titles". The limit is 50.
+		$chunks = array_chunk( $filenames, 50 );
+		$pages = array();
+		foreach ( $chunks as $chunk ) {
+			$query = array(
+				'format' => 'json',
+				'action' => 'query',
+				'prop' => 'globalusage',
+				'gulimit' => '500',
+				'titles' => implode( '|', $chunk ),
+				'continue' => ''
+			);
 
-		$query = array(
-			'format' => 'json',
-			'action' => 'query',
-			'prop' => 'globalusage',
-			'gulimit' => '500',
-			'titles' => implode( '|', $filenames ),
-			'continue' => ''
-		);
-
-		// GlobalUsage API responses contain urls (e.g. to a local wiki page using the file),
-		// that include a protocol. They're not protocol-relative unfortunately.
-		$queryData =  $this->getApiQuery( 'https://commons.wikimedia.org/w/api.php', $query );
+			// GlobalUsage API responses contain urls (e.g. to a local wiki page using the file),
+			// that include a protocol. They're not protocol-relative unfortunately.
+			$queryData = $this->getApiQuery( 'https://commons.wikimedia.org', $query );
+			$pages += (array)$queryData->pages;
+		}
 
 		$stats = array(
 			'total' => 0,
@@ -157,7 +161,7 @@ class Usage extends KrToolBaseClass {
 			'wikis' => array(),
 		);
 
-		foreach ( $queryData->pages as $pageId => $page ) {
+		foreach ( $pages as $pageId => $page ) {
 			$statTotal = 0;
 			$statWikis = array();
 
