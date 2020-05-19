@@ -99,9 +99,6 @@ case 'usage':
 
 	$kgBaseTool->addOut( '<div class="col-md-9" role="main">' );
 
-	$toc .= '<li><a href="#header">Statistics</a>';
-	$toc .= '<ul class="nav">';
-
 	// Sort descending, by total use
 	$files = $info['stats']['files'];
 	uasort( $files, function ( $a, $b ) {
@@ -128,35 +125,11 @@ case 'usage':
 		} else {
 			$kgBaseTool->addOut( '<ul>' );
 			foreach ( $file['wikis'] as $wiki => $total ) {
-				$kgBaseTool->addOut(  "$wiki ($total uses)", 'li' );
+				$kgBaseTool->addOut(  "$wiki (${total}×)", 'li' );
 			}
 			$kgBaseTool->addOut( '</ul>' );
 		}
 	}
-	$toc .= '</ul>';
-	$toc .= '</li>';
-
-	$toc .= '<li><a href="#usage">Overview</a>';
-	$toc .= '<ul class="nav">';
-	$kgBaseTool->addOut( "Overview", 'h2', array( 'id' => 'usage', 'class' => 'page-header' ) );
-	foreach ( $info['usage']['wikis'] as $wiki => $pages ) {
-		$headingId = $tool->makeSafeCssIdent( "usage-$wiki" );
-		$toc .= '<li>' . Html::element( 'a', array( 'href' => "#$headingId" ), $wiki ) . '</li>';
-		$kgBaseTool->addOut( $wiki, 'h3', array( 'id' => $headingId ) );
-		$kgBaseTool->addOut( '<ul>' );
-		foreach ( $pages as $page => $pageInfo ) {
-			$kgBaseTool->addOut( '<li>' );
-			$kgBaseTool->addOut( $page, 'a', array( 'href' => $pageInfo['url'] ) );
-			$files = array_map( function ( $file ) use ( $fileGroup ) {
-				return $fileGroup[ $file ];
-			}, $pageInfo['files'] );
-			$kgBaseTool->addOut( htmlspecialchars( " (" . implode( ', ', $files ) . ')' ) );
-			$kgBaseTool->addOut( '</li>' );
-		}
-		$kgBaseTool->addOut( '</ul>' );
-	}
-	$toc .= '</ul>';
-	$toc .= '</li>';
 
 	$toc .= '</ul>';
 	$toc .= '<a class="back-to-top" href="#top">Back to top</a>';
