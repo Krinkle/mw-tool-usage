@@ -109,17 +109,28 @@ case 'usage':
 	} );
 	foreach ( $files as $filename => $file ) {
 		$fileLabel = $fileGroup[ $filename ];
-		$heading = $fileLabel;
 		// Create a simple ID that is safe enough to use in a CSS selector
 		// without escaping (jquery.toc and bootstrap/scrollspy depend on that)
 		$headingId = $tool->makeSafeCssIdent( "stats-{$filename}" );
-		$toc .= '<li>' . Html::element( 'a', array( 'href' => "#$headingId" ), $heading ) . '</li>';
+		$toc .= '<li>' . Html::element( 'a', array( 'href' => "#$headingId" ), $fileLabel ) . '</li>';
 
 		$isEmpty = !reset( $file['wikis'] );
+
+		$heading = htmlspecialchars( $fileLabel );
 		if ( !$isEmpty ) {
-			$heading .= " ({$file['total']} uses)";
+			// HACK: The GlobalUsage API takes full page name (incl "File:"),
+			// but the GlobalUsage Special page takes page title without namespace prefix.
+			$filetitle = explode( ':', $filename, 2 )[1] ?? $filename;
+			$heading .= ' ('
+				. Html::element(
+					'a', array(
+						'href' => 'https://commons.wikimedia.org/wiki/Special:GlobalUsage/' . rawurlencode($filetitle)
+					),
+					"{$file['total']} uses"
+				)
+				. ')';
 		}
-		$kgBaseTool->addOut( $heading, 'h3', array( 'id' => $headingId ) );
+		$kgBaseTool->addOut( Html::rawElement( 'h3', array( 'id' => $headingId ), $heading ) );
 		if ( $isEmpty ) {
 			$kgBaseTool->addOut( '<p class="text-muted">No links found</p>' );
 		} else {
