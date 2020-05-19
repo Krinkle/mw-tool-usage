@@ -1,6 +1,6 @@
 {
 	"require": {
-		"php": ">=7.1",
+		"php": ">=7.2",
 		"Krinkle/toollabs-base": "^1.0.2",
 		"krinkle/intuition": "^1.1.0"
 	},
@@ -9,8 +9,7 @@
 	},
 	"scripts": {
 		"test": [
-			"parallel-lint . --exclude vendor --exclude node_modules",
-			"npm install && npm test"
+			"parallel-lint . --exclude vendor --exclude node_modules"
 		]
 	}
 }

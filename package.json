@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "devDependencies": {
-    "jsonlint": "1.6.2"
-  },
-  "scripts": {
-    "test": "jsonlint -q ./fileGroups.json"
-  }
-}
