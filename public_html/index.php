@@ -1,27 +1,18 @@
 <?php
-/**
- * Main index
- *
- * @copyright 2014-2018 Timo Tijhof
- */
-
-/**
- * Configuration
- * -------------------------------------------------
- */
+use Krinkle\Toolbase\BaseTool;
+use Krinkle\Toolbase\Html;
+use Krinkle\Intuition\Intuition;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../class.php';
 
-$tool = new Usage();
-if ( file_exists( __DIR__ . '/../config.php' ) ) {
-	$tool->setSettings( require __DIR__ . '/../config.php' );
-}
+global $kgReq;
 
+$tool = new UsageTool();
 $int = new Intuition( 'usage' );
 $int->registerDomain( 'usage', __DIR__ . '/../i18n' );
 
-$kgBaseTool = BaseTool::newFromArray( array(
+$base = BaseTool::newFromArray( array(
 	'displayTitle' => 'Usage',
 	'remoteBasePath' => dirname( $_SERVER['PHP_SELF'] ),
 	'I18N' => $int,
@@ -30,27 +21,30 @@ $kgBaseTool = BaseTool::newFromArray( array(
 	),
 	'scripts' => array(
 		'main.js',
-	)
+	),
+	'sourceInfo' => array(
+		'issueTrackerUrl' => 'https://phabricator.wikimedia.org/tag/usage-tool/',
+	),
 ) );
-$kgBaseTool->setSourceInfoGithub( 'Krinkle', 'mw-tool-usage', dirname( __DIR__ ) );
+$base->setSourceInfoGerrit( 'labs/tools/usage', dirname( __DIR__ ) );
 
 /**
  * Output
  * -------------------------------------------------
  */
 
-$kgBaseTool->addOut( '<div class="container"><div class="row">' );
+$base->addOut( '<div class="container"><div class="row">' );
 
 switch ( $kgReq->getVal( 'action', 'index' ) ) {
 case 'index':
 
-	$kgBaseTool->addOut( '<div class="col-md-9" role="main">' );
+	$base->addOut( '<div class="col-md-9" role="main">' );
 
-	$kgBaseTool->setLayout( 'header', array( 'titleText' => $int->msg( 'index-header-title' ) ) );
+	$base->setLayout( 'header', array( 'titleText' => $int->msg( 'index-header-title' ) ) );
 	$fileGroups = $tool->getFileGroups();
-	$kgBaseTool->addOut( '<ul class="nav nav-pills nav-stacked">' );
+	$base->addOut( '<ul class="nav nav-pills nav-stacked">' );
 	foreach ( $fileGroups as $groupName => $fileGroup ) {
-		$kgBaseTool->addOut(
+		$base->addOut(
 			'<li>'
 			. Html::element( 'a',
 				[
@@ -63,10 +57,10 @@ case 'index':
 			. '</li>'
 		);
 	}
-	$kgBaseTool->addOut( '</ul>' );
+	$base->addOut( '</ul>' );
 
 	// Close role=main
-	$kgBaseTool->addOut( '</div>' );
+	$base->addOut( '</div>' );
 
 	break;
 case 'usage':
@@ -82,8 +76,8 @@ case 'usage':
 
 	$toc = '<ul class="nav usage-sidenav">';
 
-	$kgBaseTool->setHeadTitle( $groupName );
-	$kgBaseTool->setLayout( 'header', array(
+	$base->setHeadTitle( $groupName );
+	$base->setLayout( 'header', array(
 		'titleText' => $int->msg( 'group-header-title', [
 			'variables' => [ $groupName ],
 		] ),
@@ -97,7 +91,7 @@ case 'usage':
 		] ),
 	) );
 
-	$kgBaseTool->addOut( '<div class="col-md-9" role="main">' );
+	$base->addOut( '<div class="col-md-9" role="main">' );
 
 	// Sort descending, by total use
 	$files = $info['stats']['files'];
@@ -130,15 +124,15 @@ case 'usage':
 				)
 				. ')';
 		}
-		$kgBaseTool->addOut( Html::rawElement( 'h3', array( 'id' => $headingId ), $heading ) );
+		$base->addOut( Html::rawElement( 'h3', array( 'id' => $headingId ), $heading ) );
 		if ( $isEmpty ) {
-			$kgBaseTool->addOut( '<p class="text-muted">No links found</p>' );
+			$base->addOut( '<p class="text-muted">No links found</p>' );
 		} else {
-			$kgBaseTool->addOut( '<ul>' );
+			$base->addOut( '<ul>' );
 			foreach ( $file['wikis'] as $wiki => $total ) {
-				$kgBaseTool->addOut(  "$wiki (${total}×)", 'li' );
+				$base->addOut(  "$wiki ({$total}×)", 'li' );
 			}
-			$kgBaseTool->addOut( '</ul>' );
+			$base->addOut( '</ul>' );
 		}
 	}
 
@@ -146,9 +140,9 @@ case 'usage':
 	$toc .= '<a class="back-to-top" href="#top">Back to top</a>';
 
 	// Close role=main
-	$kgBaseTool->addOut( '</div>' );
+	$base->addOut( '</div>' );
 
-	$kgBaseTool->addOut( '<div class="col-md-3"><div class="usage-sidebar hidden-print">' . $toc . '</div></div>' );
+	$base->addOut( '<div class="col-md-3"><div class="usage-sidebar hidden-print">' . $toc . '</div></div>' );
 
 	break;
 default:
@@ -157,10 +151,10 @@ default:
 }
 
 // Close wrapping container/row
-$kgBaseTool->addOut( '</div></div>' );
+$base->addOut( '</div></div>' );
 
 /**
  * Close up
  * -------------------------------------------------
  */
-$kgBaseTool->flushMainOutput();
+$base->flushMainOutput();

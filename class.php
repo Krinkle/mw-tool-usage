@@ -1,10 +1,21 @@
 <?php
-/**
- * Main tool class
- *
- * @copyright 2014-2018 Timo Tijhof
- */
-class Usage extends KrToolBaseClass {
+use Krinkle\Toolbase\Cache;
+use Krinkle\Toolbase\KrToolBaseClass;
+use Krinkle\Toolbase\Logger;
+
+if (!function_exists( 'array_is_list' )) {
+	function array_is_list( array $array ) {
+        $i = 0;
+        foreach ( $array as $key => $v ) {
+            if ( $key !== $i++ ) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+class UsageTool extends KrToolBaseClass {
 
 	const MAX_API_QUERY_CONTINUE = 10;
 
@@ -68,25 +79,25 @@ class Usage extends KrToolBaseClass {
 	 *         }
 	 *     }
 	 *
-	 * @param object $array1 Initial query data array to merge.
-	 * @param object ... Variable list of arrays to recursively merge.
+	 * @param array $base Initial query data array to merge
+	 * @param array ...$arrays List of arrays to recursively merge
+	 * @return array
 	 */
-	private static function mergeObject() {
-		$objects = func_get_args();
-		$base = array_shift( $objects );
-
-		foreach ( $objects as $object ) {
-			foreach ( $object as $key => $value ) {
-				if ( isset( $base->$key ) ) {
-					if ( is_object( $value ) && is_object( $base->$key ) ) {
-						self::mergeObject( $base->$key, $value );
-					} elseif ( is_array( $value ) && is_array( $base->$key ) ) {
-						$base->$key = array_merge( $base->$key, $value );
+	private static function mergeArrays( $base,...$arrays ) {
+		foreach ( $arrays as $array ) {
+			foreach ( $array as $key => $value ) {
+				if ( isset( $base[$key] ) ) {
+					if ( is_array( $value ) && is_array( $base[$key] ) ) {
+						if ( array_is_list( $value ) && array_is_list( $base[$key] ) ) {
+							$base[$key] = array_merge( $base[$key], $value );
+						} else {
+							$base[$key] = self::mergeArrays( $base[$key], $value );
+						}
 					} else {
-						$base->$key = $value;
+						$base[$key] = $value;
 					}
 				} else {
-					$base->$key = $value;
+					$base[$key] = $value;
 				}
 			}
 		}
@@ -96,40 +107,40 @@ class Usage extends KrToolBaseClass {
 
 	/**
 	 * @param string $apiUrl
-	 * @param Array $query
+	 * @param array $query
 	 * @param int $requests Internal parameter
-	 * @return object Query data
+	 * @return array Query data
 	 */
-	protected function getApiQuery( $apiUrl, Array $query, $requests = 0 ) {
+	protected function getApiQuery( $apiUrl, array $query, $requests = 0 ) {
 		// Request data
 		// TODO: Silently fails if no response or unable to decode. Handle error.
 		$requests++;
 
 		$data = kfApiRequest( $apiUrl, $query );
-		if ( !$data || !isset( $data->query ) ) {
+		if ( !isset( $data['query'] ) ) {
 			return array();
 		}
-		unset( $data->query->normalized );
+		unset( $data['query']['normalized'] );
 
 		// https://www.mediawiki.org/wiki/API:Query#Continuing_queries
-		if ( isset( $data->continue ) ) {
+		if ( isset( $data['continue'] ) ) {
 			if ( $requests >= self::MAX_API_QUERY_CONTINUE ) {
-				kfLog( "Reached maximum continue depth ($requests requests)", __METHOD__ );
-				return $data->query;
+				Logger::debug( "Reached maximum continue depth ($requests requests)" );
+				return $data['query'];
 			}
-			$nextQuery = array_merge( $query, (array)$data->continue );
+			$nextQuery = array_merge( $query, $data['continue'] );
 			$nextQueryData = $this->getApiQuery( $apiUrl, $nextQuery, $requests );
-			return self::mergeObject( $data->query, $nextQueryData );
+			return self::mergeArrays( $data['query'], $nextQueryData );
 		}
 
-		return $data->query;
+		return $data['query'];
 	}
 
 	/**
 	 * @param string[] $filenames
 	 * @return array
 	 */
-	protected function fetchGlobalUsageForFiles( Array $filenames ) {
+	protected function fetchGlobalUsageForFiles( array $filenames ) {
 		// API error 'toomanyvalue': Too many values for "titles". The limit is 50.
 		$chunks = array_chunk( $filenames, 50 );
 		$pages = array();
@@ -146,7 +157,7 @@ class Usage extends KrToolBaseClass {
 			// GlobalUsage API responses contain urls (e.g. to a local wiki page using the file),
 			// that include a protocol. They're not protocol-relative unfortunately.
 			$queryData = $this->getApiQuery( 'https://commons.wikimedia.org', $query );
-			$pages += (array)$queryData->pages;
+			$pages += $queryData['pages'];
 		}
 
 		$stats = array(
@@ -165,23 +176,23 @@ class Usage extends KrToolBaseClass {
 			$statTotal = 0;
 			$statWikis = array();
 
-			foreach ( $page->globalusage as $use ) {
+			foreach ( $page['globalusage'] as $use ) {
 				$statTotal++;
 
-				if ( isset( $statWikis[ $use->wiki ] ) ) {
-					$statWikis[ $use->wiki ]++;
+				if ( isset( $statWikis[ $use['wiki'] ] ) ) {
+					$statWikis[ $use['wiki'] ]++;
 				} else {
-					$statWikis[ $use->wiki ] = 1;
+					$statWikis[ $use['wiki'] ] = 1;
 				}
 
 				// Fix-up protocol
-				$usage['wikis'][ $use->wiki ][ $use->title ]['url'] = preg_replace( '/^http:\/\//', '//', $use->url );
-				$usage['wikis'][ $use->wiki ][ $use->title ]['files'][] = $page->title;
+				$usage['wikis'][ $use['wiki'] ][ $use['title'] ]['url'] = preg_replace( '/^http:\/\//', '//', $use['url'] );
+				$usage['wikis'][ $use['wiki'] ][ $use['title'] ]['files'][] = $page['title'];
 			}
 
 			arsort( $statWikis );
 
-			$stats['files'][ $page->title ] = array(
+			$stats['files'][ $page['title'] ] = array(
 				'total' => $statTotal,
 				'wikis' => $statWikis,
 			);
@@ -201,7 +212,7 @@ class Usage extends KrToolBaseClass {
 	}
 
 	/**
-	 * @param array $fileGroup
+	 * @param string $groupName
 	 * @return array
 	 */
 	public function getUsage( $groupName ) {
@@ -212,7 +223,7 @@ class Usage extends KrToolBaseClass {
 		// roll-over in case of changes to the configuration.
 		$groupHash = sha1( json_encode( $fileGroup ) );
 
-		$key = kfCacheKey( 'usage', 'mwapi', 'globalusage', 'fileGroup', $groupName, $groupHash );
+		$key = Cache::makeKey( 'usagetool-globalusageapi-filegroup', $groupName, $groupHash );
 		$value = $kgCache->get( $key );
 		if ( $value === false ) {
 			$value =  $this->fetchGlobalUsageForFiles( array_keys( $fileGroup ) );

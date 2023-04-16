@@ -1,22 +1,34 @@
-[![Build Status](https://travis-ci.org/Krinkle/mw-tool-usage.svg?branch=master)](https://travis-ci.org/Krinkle/mw-tool-usage)
+# Usage tool
 
-# mw-tool-usage
+## Local development
 
-## Deployment
-
-1. Clone this repository.
-2. Run `composer update --no-dev`.
-3. Link `mw-tool-usage/public_html` to your server.
-
-For Wikimedia Toolforge, run something like:
-```
-$ ln -s ~/src/mw-tool-usage/public_html/ ~/public_html
-```
-
-## Development
-
-1. Clone this repository.
-2. Run `composer update`.
-3. Run `cd public_html/ && php -S localhost:4000`
+1. `composer update`
+2. `composer serve`
 
 View <http://localhost:4000/>.
+
+## Deployment on Toolforge
+
+Initial setup, as per [Toolforge documentation](https://wikitech.wikimedia.org/wiki/Help:Toolforge/PHP):
+
+1. Clone this repository.
+2. Create public link, e.g.
+   `$ ln -s ~/src/mw-tool-usage/public_html/ ~/public_html`
+3. Start webservice
+   `$ webservice --backend=kubernetes php7.4 restart`
+4. Run composer (in a webservice shell, to ensure correct PHP version context)
+   ```
+   $ webservice shell
+   tools-shell$ cd mw-tool-usage
+   tools-shell$ composer update --no-dev
+   ```
+
+Updates:
+
+```
+tools-login:~$ webservice shell
+
+tools-shell:~$ cd mw-tool-usage/
+tools-shell:usage$ git pull
+tools-shell:usage$ composer update --no-dev
+```
